@@ -6,9 +6,9 @@ CREATE TABLE users (
   name VARCHAR(100) NOT NULL,  
   email VARCHAR(100) NOT NULL,
   password VARCHAR(255) NOT NULL,
-  status INT NOT NULL,
+  status TINYINT NOT NULL,
   created_at DATETIME,  
-  updated_at DATETIME,
+  updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME 
 );
 
@@ -21,7 +21,7 @@ CREATE TABLE images (
   mime_type VARCHAR(255),
   file_size VARCHAR(255),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE workspaces (
   id INT AUTO_INCREMENT PRIMARY KEY,  
   name VARCHAR(100) NOT NULL,  
   created_at DATETIME,  
-  updated_at DATETIME
+  updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP
 );
 
 INSERT INTO workspaces (name, created_at, updated_at) VALUES ('ワークスペース1', '2025-02-19 23:00:00', '2025-02-19 23:00:00'), ('ワークスペース2', '2025-02-19 23:30:00', '2025-02-19 23:30:00'), ('ワークスペース3', '2025-02-19 23:15:00', '2025-02-19 23:15:00');
@@ -42,7 +42,7 @@ CREATE TABLE channels (
   workspace_id INT NOT NULL,
   name VARCHAR(100) NOT NULL,  
   created_at DATETIME,  
-  updated_at DATETIME,
+  updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE messages (
   parent_id INT DEFAULT NULL,
   post text NOT NULL,  
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME,
   FULLTEXT (post) WITH PARSER ngram,
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -69,10 +69,9 @@ CREATE TABLE workspaces_users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   workspace_id INT NOT NULL,
   user_id INT NOT NULL,  
-  role INT NOT NULL,
-  is_active BOOLEAN NOT NULL,  
+  role TINYINT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (workspace_id) REFERENCES workspaces(id)
 );
@@ -83,10 +82,9 @@ CREATE TABLE channels_users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   channel_id INT NOT NULL,
   user_id INT NOT NULL,  
-  role INT NOT NULL,
-  is_active BOOLEAN NOT NULL,  
+  role TINYINT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (channel_id) REFERENCES channels(id)
 );
