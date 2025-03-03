@@ -11,6 +11,16 @@ WHERE directory_id = 3;
 SELECT du.user_id FROM documents_users du
 WHERE du.document_id = 5;
 
+-- ディレクトリを移動させる(4を1の直下にする)
+UPDATE directory_relations 
+SET path_length = 1
+WHERE id = 4;
+UPDATE directory_relations 
+SET path_length = 2
+WHERE id = 5;
+DELETE FROM directory_relations WHERE id = 8;
+DELETE FROM directory_relations WHERE id = 9;
+
 -- ディレクトリごとのパス(文字列で)を取得する
 -- サブクエリ使用
 SELECT dp.descendant_id as id, group_concat(dp.directory_name order by dp.path_length desc separator '/') as path
