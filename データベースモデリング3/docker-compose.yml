@@ -1,0 +1,13 @@
+services:
+  db:
+    build: .
+    container_name: "db-container"
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: mysql_study
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
