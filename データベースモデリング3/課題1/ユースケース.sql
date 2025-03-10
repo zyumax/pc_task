@@ -8,24 +8,24 @@ SELECT * FROM documents
 WHERE directory_id = 3;
 
 -- 特定のドキュメントの編集可能なユーザーを取得
-SELECT du.user_id FROM documents_users du
-WHERE du.document_id = 5;
+SELECT dp.user_id FROM document_permissions dp
+WHERE dp.document_id = 5 and dp.role = 1;
 
 -- ディレクトリを移動させる(4を1の直下にする)
 UPDATE directory_relations 
-SET path_length = 1
+SET hierarchy_depth = 1
 WHERE id = 4;
 UPDATE directory_relations 
-SET path_length = 2
+SET hierarchy_depth = 2
 WHERE id = 5;
 DELETE FROM directory_relations WHERE id = 8;
 DELETE FROM directory_relations WHERE id = 9;
 
 -- ディレクトリごとのパス(文字列で)を取得する
 -- サブクエリ使用
-SELECT dp.descendant_id as id, group_concat(dp.directory_name order by dp.path_length desc separator '/') as path
+SELECT dp.descendant_id as id, group_concat(dp.directory_name order by dp.hierarchy_depth desc separator '/') as path
 FROM (
-  SELECT dr.ancestor_id, dr.descendant_id, path_length, d.directory_name 
+  SELECT dr.ancestor_id, dr.descendant_id, hierarchy_depth, d.directory_name 
   FROM directory_relations dr
   JOIN directories d ON d.id = dr.ancestor_id
 ) as dp
@@ -33,7 +33,7 @@ GROUP BY dp.descendant_id
 ORDER BY id;
 
 -- サブクエリ不使用
-SELECT dr.descendant_id as id, group_concat(d.directory_name order by dr.path_length desc separator '/') as path
+SELECT dr.descendant_id as id, group_concat(d.directory_name order by dr.hierarchy_depth desc separator '/') as path
 FROM directory_relations dr
 JOIN directories d ON d.id = dr.ancestor_id
 GROUP BY dr.descendant_id
