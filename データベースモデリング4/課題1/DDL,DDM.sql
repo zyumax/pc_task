@@ -1,65 +1,63 @@
 CREATE TABLE users (  
   id INT AUTO_INCREMENT PRIMARY KEY,  
   name VARCHAR(50) NOT NULL,
-  email VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at DATETIME DEFAULT '9999-12-31 23:59:59'
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (name, email, password) VALUES
-('ユーザー1', 'user1@example.com', SHA2('password', 256)),
-('ユーザー2', 'user2@example.com', SHA2('password', 256)),
-('ユーザー3', 'user3@example.com', SHA2('password', 256));
+INSERT INTO users (name) VALUES
+('ユーザー1'),
+('ユーザー2'),
+('ユーザー3');
 
-CREATE TABLE reminder_frequency (
+CREATE TABLE slack_workspaces (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  frequency VARCHAR(100),
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at DATETIME DEFAULT '9999-12-31 23:59:59'
+  access_token VARCHAR(255),
+  team_id VARCHAR(100),
+  team_name VARCHAR(100),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO reminder_frequency (frequency) VALUES
-('毎日'),
-('X日おき'),
-('毎週X曜日'),
-('毎月X日');
+INSERT INTO slack_workspaces (access_token, team_id, team_name) VALUES
+('アクセストークン1', 'T9TK3CUKW', 'Slack Pickleball Team'),
+('アクセストークン2', 'T8LK4QJSD', 'Slack Baseball Team'),
+('アクセストークン3', 'T7SG9LAQZ', 'Slack Soccer Team');
 
-CREATE TABLE send_reminders (
+CREATE TABLE tasks (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  reminder_frequency_id INT NOT NULL,
+  slack_workspace_id INT NOT NULL,
   content VARCHAR(255),
+  channel_id VARCHAR(100),
+  create_slack_timestamp INT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME DEFAULT '9999-12-31 23:59:59',
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (reminder_frequency_id) REFERENCES reminder_frequency(id)
+  FOREIGN KEY (slack_workspace_id) REFERENCES slack_workspaces(id)
 );
 
-INSERT INTO send_reminders (user_id, reminder_frequency_id, content) VALUES
-(1,1,'リマインダー1'),
-(1,2,'リマインダー2'),
-(1,3,'リマインダー3'),
-(1,4,'リマインダー4'),
-(2,1,'リマインダー5'),
-(2,3,'リマインダー6'),
-(2,4,'リマインダー7'),
-(3,2,'リマインダー8');
+INSERT INTO tasks (user_id, slack_workspace_id, content, channel_id, create_slack_timestamp) VALUES
+(1,1,'リマインダー1', 'C12345', 1049122800),
+(1,2,'リマインダー2', 'C23456', 1741528602),
+(1,3,'リマインダー3', 'C34567', 1745157415),
+(1,1,'リマインダー4', 'C12345', 1831832047),
+(2,2,'リマインダー5', 'C23456', 1894990447),
+(2,3,'リマインダー6', 'C34567', 1987006447),
+(2,1,'リマインダー7', 'C45678', 2113236847),
+(3,2,'リマインダー8', 'C56789', 2146587247);
 
-CREATE TABLE get_reminders (
+CREATE TABLE reminders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  send_reminders_id INT NOT NULL,
+  task_id INT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
   deleted_at DATETIME DEFAULT '9999-12-31 23:59:59',
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (send_reminders_id) REFERENCES send_reminders(id)
+  FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
-INSERT INTO get_reminders (user_id, send_reminders_id) VALUES
+INSERT INTO reminders (user_id, task_id) VALUES
 (2,1),
 (3,1),
 (2,2),
@@ -73,14 +71,34 @@ INSERT INTO get_reminders (user_id, send_reminders_id) VALUES
 (1,8),
 (2,8);
 
-CREATE TABLE reminder_logs (
+CREATE TABLE reminder_frequency (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  send_reminders_id INT NOT NULL,
+  task_id INT NOT NULL,
+  frequency_label VARCHAR(100),
+  frequency_value INT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (send_reminders_id) REFERENCES send_reminders(id)
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
-INSERT INTO reminder_logs (send_reminders_id) VALUES
+INSERT INTO reminder_frequency (task_id, frequency_label, frequency_value) VALUES
+(1, '毎日', 1),
+(2, '2日おき', 2),
+(3, '毎週X曜日', 3),
+(4, '毎月X日', 4),
+(5, '毎日', 1),
+(6, '2日おき', 2),
+(7, '4日おき', 5),
+(8, '5時間おき', 6);
+
+CREATE TABLE reminder_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  task_id INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (task_id) REFERENCES tasks(id)
+);
+
+INSERT INTO reminder_logs (task_id) VALUES
 (1),
 (1),
 (1),
