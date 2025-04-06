@@ -1,15 +1,3 @@
-CREATE TABLE users (  
-  id INT AUTO_INCREMENT PRIMARY KEY,  
-  name VARCHAR(50) NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-INSERT INTO users (name) VALUES
-('ユーザー1'),
-('ユーザー2'),
-('ユーザー3');
-
 CREATE TABLE slack_workspaces (
   id INT AUTO_INCREMENT PRIMARY KEY,
   access_token VARCHAR(255),
@@ -22,6 +10,22 @@ INSERT INTO slack_workspaces (access_token, team_id, team_name) VALUES
 ('アクセストークン1', 'T9TK3CUKW', 'Slack Pickleball Team'),
 ('アクセストークン2', 'T8LK4QJSD', 'Slack Baseball Team'),
 ('アクセストークン3', 'T7SG9LAQZ', 'Slack Soccer Team');
+
+CREATE TABLE users (  
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  slack_workspace_id INT NOT NULL,  
+  name VARCHAR(50) NOT NULL,
+  user_id INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (slack_workspace_id) REFERENCES slack_workspaces(id),
+  UNIQUE KEY (slack_workspace_id, user_id)
+);
+
+INSERT INTO users (slack_workspace_id, name, user_id) VALUES
+(1, 'ユーザー1', U1234),
+(1, 'ユーザー2', U2345),
+(2, 'ユーザー3', U3456);
 
 CREATE TABLE tasks (
   id INT AUTO_INCREMENT PRIMARY KEY,
