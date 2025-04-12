@@ -63,17 +63,3 @@ INSERT INTO article_histories (article_id, user_id, revision, title, content) VA
 UPDATE article_histories 
 SET deleted_at = NOW()
 WHERE id IN (1,2,3,5,6,8,9,11,14);
-
-
-
-
-
-
-UPDATE article_histories SET created_at = NOW()
-WHERE id = 10;
-
-UPDATE article_histories SET created_at = NOW(), deleted_at = NOW()
-WHERE id = 11;
-
-UPDATE article_histories SET deleted_at = NOW()
-WHERE id = 11;
