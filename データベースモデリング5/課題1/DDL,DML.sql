@@ -13,18 +13,20 @@ INSERT INTO users (name, email) VALUES
 ('ユーザー3', 'user3@example.com');
 
 CREATE TABLE articles (  
-  id INT AUTO_INCREMENT PRIMARY KEY,  
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  latest_revision INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME DEFAULT '9999-12-31 23:59:59'
 );
 
-INSERT INTO articles (id) VALUES
-(1),
-(2),
-(3),
+INSERT INTO articles (latest_revision) VALUES
 (4),
-(5),
-(6);
+(3),
+(3),
+(2),
+(1),
+(1);
 -- articlesのid=6を削除(記事自体の削除を想定)
 UPDATE articles 
 SET deleted_at = NOW()
@@ -38,7 +40,6 @@ CREATE TABLE article_histories (
   title VARCHAR(50),
   content TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  deleted_at DATETIME DEFAULT '9999-12-31 23:59:59',
   FOREIGN KEY (article_id) REFERENCES articles(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -59,7 +60,6 @@ INSERT INTO article_histories (article_id, user_id, revision, title, content) VA
 (5,1,1, 'タイトル5', '本文5'),
 (6,1,1, 'タイトル6', '本文6');
 
--- 最新版以外の記事にdeleted_atを入れる。(article_id=6は記事自体を削除の想定)
 UPDATE article_histories 
-SET deleted_at = NOW()
-WHERE id IN (1,2,3,5,6,8,9,11,14);
+SET created_at = NOW()
+WHERE id IN (4,7,10,12,13);
