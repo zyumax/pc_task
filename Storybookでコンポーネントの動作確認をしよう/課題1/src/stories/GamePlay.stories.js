@@ -15,3 +15,19 @@ export const gamePlay = {
     }
   }
 };
+
+export const getByLabelPlay = {
+  play: async ({ canvas, userEvent }) => {
+    const x5 = canvas.getByLabelText('square5');
+    const x1 = canvas.getByLabelText('square1');
+    const x2 = canvas.getByLabelText('square2');
+    const x3 = canvas.getByLabelText('square3');
+    const x8 = canvas.getByLabelText('square8');
+
+    await userEvent.click(x2);
+    await userEvent.click(x1);
+    await userEvent.click(x5);
+    await userEvent.click(x3);
+    await userEvent.click(x8);
+  }
+};
