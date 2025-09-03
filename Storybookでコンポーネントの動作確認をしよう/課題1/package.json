@@ -8,7 +8,11 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "vrt:capture": "storycap http://localhost:6006 --serverCmd \"storybook dev -p 6006\" -o screenshots --disableCssAnimation --delay 300 --viewport '1280x800'",
+    "vrt:baseline:init": "rm -rf .reg/baseline && mkdir -p .reg/baseline && cp -R screenshots/. .reg/baseline/",
+    "vrt:diff": "mkdir -p .reg/diff && reg-cli screenshots .reg/baseline .reg/diff --report .reg/report.html",
+    "vrt:open": "open-cli .reg/report.html"
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -23,8 +27,11 @@
     "@storybook/preset-create-react-app": "8.6.14",
     "@storybook/react-webpack5": "8.6.14",
     "@storybook/test": "^8.6.14",
+    "open-cli": "^8.0.0",
     "prop-types": "^15.8.1",
+    "reg-cli": "^0.18.10",
     "storybook": "8.6.14",
+    "storycap": "^5.0.1",
     "webpack": "^5.101.0"
   },
   "browserslist": {
