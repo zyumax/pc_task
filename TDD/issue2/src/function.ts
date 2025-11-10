@@ -1,18 +1,24 @@
-export function validCountNumber(args: number[]) {
+export function validCountNumber(args: number[]): string | null {
+  const isString = args.some(arg => Number.isNaN(arg));
+  if(isString) {
+    return '引数は数字にしてください';
+  }
   if(args.length === 0) {
-    throw new Error("引数を指定してください");
+    return '引数を指定してください';
   }  
   if(args.length >= 31) {
-    throw new Error("引数は30個以下にしてください");
+    return '引数は30個以下にしてください';
   }
+  return null;
 }
 
 export function add(args: number[]): number | string {
-  validCountNumber(args);
+  const error = validCountNumber(args);
+  if (error) {
+    return error;
+  }
 
-  const result: number = args.reduce(
-    (acc, cur) => acc + cur, 0
-  );
+  const result: number = args.reduce((acc, cur) => acc + cur, 0);
   if (result > 1000) {
     return 'too big';
   }
@@ -20,9 +26,13 @@ export function add(args: number[]): number | string {
 };
 
 export function substract(args: number[]): number | string {
-  validCountNumber(args);
+  const error = validCountNumber(args);
+  if (error) {
+    return error;
+  }
 
-  const result: number = args.reduce((acc, cur) => acc - cur);
+  const initialValue = args[0];
+  const result: number = args.slice(1).reduce((acc, cur) => acc - cur, initialValue);
   if (result < 0) {
     return 'negative number'
   }
@@ -30,9 +40,12 @@ export function substract(args: number[]): number | string {
 };
 
 export function multi(args: number[]): number | string {
-  validCountNumber(args);
+  const error = validCountNumber(args);
+  if (error) {
+    return error;
+  }
 
-  const result: number = args.reduce((acc, cur) => acc * cur);
+  const result: number = args.reduce((acc, cur) => acc * cur, 1);
   if (result > 1000) {
     return 'big big number';
   }
@@ -40,12 +53,19 @@ export function multi(args: number[]): number | string {
 };
 
 export function divide(args: number[]): number | string {
-  validCountNumber(args);
+  const error = validCountNumber(args);
+  if (error) {
+    return error;
+  }
 
-  const result: number = args.reduce((acc, cur) => {
-    if (cur === 0) throw new Error("0で割ることはできません");
-    return acc / cur
-  });
+  const hasZero = args.slice(1).some(arg => arg === 0);
+  if (hasZero) {
+    return '0で割ることはできません';
+  }
+
+  const initialValue = args[0];
+  const result: number = args.slice(1).reduce((acc, cur) => acc / cur, initialValue);
+  // resultが整数の場合はそのまま表示、そうでない場合は小数点一桁までを表示
   const round1dp = Number.isInteger(result) ? result : Math.round(result * 10) / 10;
 
   return round1dp;
@@ -66,5 +86,6 @@ if (funcName === 'add') {
 } else {
   result = '関数を定義してください'
 }
-
+// node function.js add 1 2 3
+// npx ts-node function.ts add 1 2 3
 console.log(funcName, numbers, result);
