@@ -86,6 +86,7 @@ if (funcName === 'add') {
 } else {
   result = '関数を定義してください'
 }
+
 // node function.js add 1 2 3
 // npx ts-node function.ts add 1 2 3
-console.log(funcName, numbers, result);
+// console.log(funcName, numbers, result);
