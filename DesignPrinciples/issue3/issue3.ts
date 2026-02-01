@@ -10,7 +10,6 @@ class Person {
 
 class Company {
     private people: Person[]
-    // 外部から書き換えられないように参照コピー
     constructor(people: Person[]) {
         this.people = [...people];
     }
